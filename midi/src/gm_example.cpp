@@ -7,9 +7,27 @@ using namespace GarrysMod::Lua;
 RtMidiIn *midiin = 0;
 
 /*
+	Get the available MIDI ports
+*/
+int getPorts(lua_State* state)
+{
+	int portCount = (int) midiin->getPortCount();
+
+	LUA->CreateTable();
+
+	for (int i = 0; i < portCount;i++) {
+		LUA->PushNumber(i);
+		LUA->PushString(midiin->getPortName(i).c_str());
+		LUA->SetTable(-3);
+	}
+
+	return 1;
+}
+
+/*
 	Open the Midi device
 */
-int openMidi( lua_State* state )
+int openMidi(lua_State* state)
 {
 	int port = 0;
 	if (LUA->IsType(1, Type::NUMBER))
@@ -36,6 +54,7 @@ GMOD_MODULE_OPEN()
 
 	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
 		LUA->CreateTable();
+			LUA->PushCFunction(getPorts); LUA->SetField(-2, "GetPorts");
 			LUA->PushCFunction(openMidi); LUA->SetField(-2, "Open");
 		LUA->SetField(-2, "midi");
 	LUA->Pop();
