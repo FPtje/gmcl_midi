@@ -11,11 +11,11 @@ RtMidiIn *midiin = 0;
 */
 int getPorts(lua_State* state)
 {
-	int portCount = (int) midiin->getPortCount();
+	unsigned int portCount = midiin->getPortCount();
 
 	LUA->CreateTable();
 
-	for (int i = 0; i < portCount;i++) {
+	for (unsigned int i = 0; i < portCount;i++) {
 		LUA->PushNumber(i);
 		LUA->PushString(midiin->getPortName(i).c_str());
 		LUA->SetTable(-3);
@@ -33,8 +33,14 @@ int openMidi(lua_State* state)
 	if (LUA->IsType(1, Type::NUMBER))
 		port = (int) LUA->GetNumber(1);
 
+	if (midiin->getPortCount() == 0) {
+		LUA->ThrowError("No input ports available!");
+		return 0;
+	}
+
 	try {
 		midiin->openPort(port);
+		LUA->PushString(midiin->getPortName().c_str());
 	}
 	catch(RtMidiError &error) {
 		LUA->ThrowError(error.getMessage().c_str());
