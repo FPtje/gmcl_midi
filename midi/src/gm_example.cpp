@@ -5,7 +5,7 @@
 using namespace GarrysMod::Lua;
 
 RtMidiIn *midiin = 0;
-std::vector<unsigned char> messageList;
+std::vector<std::vector<unsigned char>> messageList;
 
 /*
 	Called when a MIDI event occurs
@@ -15,9 +15,7 @@ void onMidiCallback(double deltatime, std::vector<unsigned char> *message, void 
   unsigned int nBytes = message->size();
   if (nBytes == 0) return;
 
-  for (unsigned int i = 0; i < nBytes; i++ ) {
-	  messageList.push_back(message->at(i));
-  }
+  messageList.push_back(*message);
 }
 
 /*
@@ -70,18 +68,24 @@ int openMidi(lua_State* state)
 */
 int pollMidi(lua_State* state)
 {
-	unsigned int msgSize = messageList.size();
-	if (msgSize == 0) return 1;
+	unsigned int messagesSize = messageList.size();
+	if (messagesSize == 0) return 1;
 
 	
 	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
 		LUA->GetField(-1, "hook");
-			for (unsigned int i = 0; i < msgSize; i++ ) {
+			for (unsigned int i = 0; i < messagesSize; i++ ) {
+				unsigned int msgSize = messageList.at(i).size();
+
+
 				LUA->GetField(-1, "Call");
 				LUA->PushString("MIDI");
 				LUA->PushNil();
-				LUA->PushNumber(messageList.at(i));
-				LUA->Call(3, 0);
+
+				for (unsigned int j = 0; j < msgSize; j++ ) {
+					LUA->PushNumber(messageList.at(i).at(j));
+				}
+				LUA->Call(2 + msgSize, 0);
 			}
 	LUA->Pop();
 
