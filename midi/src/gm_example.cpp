@@ -4,44 +4,41 @@
 
 using namespace GarrysMod::Lua;
 
+RtMidiIn *midiin = 0;
+
 /*
-
-require( "example" );
-
-MsgN( TestFunction() );
-
-MsgN( TestFunction( 24.75 ) );
-
+	Open the Midi device
 */
-
-int MyExampleFunction( lua_State* state )
+int openMidi( lua_State* state )
 {
-	if ( LUA->IsType( 1, Type::NUMBER ) )
-	{
-		char strOut[512];
-		float fNumber = LUA->GetNumber( 1 );
-		sprintf( strOut, "Thanks for the number - I love %f!!", fNumber );
-		LUA->PushString( strOut );
-		return 1;
+	int port = 0;
+	if (LUA->IsType(1, Type::NUMBER))
+		port = (int) LUA->GetNumber(1);
+
+	try {
+		midiin->openPort(port);
+	}
+	catch(RtMidiError &error) {
+		LUA->ThrowError(error.getMessage().c_str());
+		return 0;
 	}
 
-	LUA->PushString( "This string is returned" );
 	return 1;
 }
 
 
 //
-// Called when you module is opened
+// Called when module is opened
 //
 GMOD_MODULE_OPEN()
 {
-	//
-	// Set Global[ "TextFunction" ] = MyExampleFunction
-	//
-	LUA->PushSpecial( GarrysMod::Lua::SPECIAL_GLOB );	// Push global table
-	LUA->PushString( "TestFunction" );					// Push Name
-	LUA->PushCFunction( MyExampleFunction );			// Push function
-	LUA->SetTable( -3 );								// Set the table 
+	midiin = new RtMidiIn();
+
+	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
+		LUA->CreateTable();
+			LUA->PushCFunction(openMidi); LUA->SetField(-2, "Open");
+		LUA->SetField(-2, "midi");
+	LUA->Pop();
 
 	return 0;
 }
@@ -51,5 +48,7 @@ GMOD_MODULE_OPEN()
 //
 GMOD_MODULE_CLOSE()
 {
+	delete midiin;
+
 	return 0;
 }
