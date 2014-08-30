@@ -1,5 +1,6 @@
 #include "GarrysMod/Lua/Interface.h"
 #include <stdio.h>
+#include "RtMidi.h"
 
 using namespace GarrysMod::Lua;
 
