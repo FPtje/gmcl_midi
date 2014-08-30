@@ -1,1 +1,5 @@
 premake4.exe
+midi/lib/*
+midi/linux-gmake/*
+midi/macosx-gmake/*
+midi/windows-vs2010/*
