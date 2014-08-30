@@ -70,6 +70,23 @@ int openMidi(lua_State* state)
 */
 int pollMidi(lua_State* state)
 {
+	unsigned int msgSize = messageList.size();
+	if (msgSize == 0) return 1;
+
+	
+	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
+		LUA->GetField(-1, "hook");
+			for (unsigned int i = 0; i < msgSize; i++ ) {
+				LUA->GetField(-1, "Call");
+				LUA->PushString("MIDI");
+				LUA->PushNil();
+				LUA->PushNumber(messageList.at(i));
+				LUA->Call(3, 0);
+			}
+	LUA->Pop();
+
+
+	messageList.clear();
 
 	return 1;
 }
