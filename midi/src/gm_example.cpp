@@ -5,6 +5,20 @@
 using namespace GarrysMod::Lua;
 
 RtMidiIn *midiin = 0;
+std::vector<unsigned char> messageList;
+
+/*
+	Called when a MIDI event occurs
+*/
+void onMidiCallback(double deltatime, std::vector<unsigned char> *message, void * /*userData*/)
+{
+  unsigned int nBytes = message->size();
+  if (nBytes == 0) return;
+
+  for (unsigned int i = 0; i < nBytes; i++ ) {
+	  messageList.push_back(message->at(i));
+  }
+}
 
 /*
 	Get the available MIDI ports
@@ -50,6 +64,15 @@ int openMidi(lua_State* state)
 	return 1;
 }
 
+/*
+	This function is called every frame.
+	It's used for syncing the MIDI events with Lua
+*/
+int pollMidi(lua_State* state)
+{
+
+	return 1;
+}
 
 //
 // Called when module is opened
@@ -57,7 +80,19 @@ int openMidi(lua_State* state)
 GMOD_MODULE_OPEN()
 {
 	midiin = new RtMidiIn();
+	midiin->setCallback(&onMidiCallback);
 
+	// Add the polling hook
+	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
+	LUA->GetField(-1, "hook");
+		LUA->GetField(-1, "Add");
+		LUA->PushString("Think");
+		LUA->PushString("Midi polling");
+		LUA->PushCFunction(pollMidi);
+		LUA->Call(3, 0);
+	LUA->Pop();
+
+	// Create the midi table
 	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
 		LUA->CreateTable();
 			LUA->PushCFunction(getPorts); LUA->SetField(-2, "GetPorts");
