@@ -21,6 +21,18 @@ It is possible that there is no `bin` folder in `garrysmod/lua`. In that case yo
 4. Add a listener to the `"MIDI"` hook. This is where all the events come in.
 5. In the listener, filter the events you want to listen to and perform actions based on these events.
 
+# API
+Taking a quick glance at [the MIDI protocol](https://ccrma.stanford.edu/~craig/articles/linuxmidi/misc/essenmidi.html) will make understanding this API a *lot* easier.
+
+## Hook: `"MIDI"`
+Called when a MIDI event occurs (when a key is pressed, released, when the pitch bend changes, etc).
+
+Parameters:
+- `command`: The command code of the event. This number contains **BOTH** the command code (first four bits of the number) **AND** the channel to which the command applies (last four bits of the number). These two can be separated with the `midi.GetCommandCode(command)` (returns just the command code) and `midi.GetCommandChannel(command)`. To get a human readable name of the command code, you can run `midi.GetCommandName(command)`.
+- `par1`: Many commands have one or more parameters. The command code `144` (named `"NOTE_ON"`) has two parameters: the number of the key pressed and the velocity (how hard it was pressed).
+- `...`: other parameters
+
+
 # Example
 ```Lua
 require("midi")
