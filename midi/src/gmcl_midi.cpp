@@ -151,6 +151,38 @@ int getCommandChannel(lua_State* state)
 	return 1;
 }
 
+
+int getCommandName(lua_State* state)
+{
+	if (!LUA->CheckNumber(1)) {
+		return 0;
+	}
+
+	unsigned int command = LUA->GetNumber(1) ;
+	command = command & 0xF0;
+
+	if (command == 0x80)
+		LUA->PushString("NOTE_OFF");
+	else if (command == 0x90)
+		LUA->PushString("NOTE_ON");
+	else if (command == 0xA0)
+		LUA->PushString("AFTERTOUCH");
+	else if (command == 0xB0)
+		LUA->PushString("CONTINUOUS_CONTROLLER");
+	else if (command == 0xC0)
+		LUA->PushString("PATCH_CHANGE");
+	else if (command == 0xD0)
+		LUA->PushString("CHANNEL_PRESSURE");
+	else if (command == 0xE0)
+		LUA->PushString("PITCH_BEND");
+	else if (command == 0xF0)
+		LUA->PushString("SYSEX");
+	else
+		LUA->PushNil();
+
+	return 1;
+}
+
 //
 // Called when module is opened
 //
@@ -180,6 +212,7 @@ GMOD_MODULE_OPEN()
 			// MIDI command helper functions
 			LUA->PushCFunction(getCommandCode); LUA->SetField(-2, "GetCommandCode");
 			LUA->PushCFunction(getCommandChannel); LUA->SetField(-2, "GetCommandChannel");
+			LUA->PushCFunction(getCommandName); LUA->SetField(-2, "GetCommandName");
 		LUA->SetField(-2, "midi");
 	LUA->Pop();
 
