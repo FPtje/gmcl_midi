@@ -6,6 +6,14 @@ A clientside C++ module for Garry's mod that allows you to read events from a MI
 # Download
 Please see the [Releases](https://github.com/FPtje/gmcl_midi/releases) tab
 
+# How to install
+Windows:
+
+> Put gmcl_midi_win32.dll in `garrysmod/lua/bin/`
+
+It is possible that there is no `bin` folder in `garrysmod/lua`. In that case you can just create it.
+
+
 # How to use
 1. `require "midi"`
 2. Figure out which devices you can connect to with `midi.GetPorts()`
