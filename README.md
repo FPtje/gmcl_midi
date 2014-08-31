@@ -12,9 +12,9 @@ Windows:
 > Put gmcl_midi_win32.dll in `garrysmod/lua/bin/`
 
 It is possible that there is no `bin` folder in `garrysmod/lua`. In that case you can just create it.
+You're done here if you want to use this module with an existing addon. Everything below here is for people who want to make Lua scripts with this module.
 
-
-# How to use
+# How to use (for developers)
 1. `require "midi"`
 2. Figure out which devices you can connect to with `midi.GetPorts()`
 3. Open a connection with your midi device using `midi.Open(portNumber)`. By default it will try to open port 0. An error is thrown if there are no devices.
