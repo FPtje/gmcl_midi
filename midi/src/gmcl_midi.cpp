@@ -121,6 +121,37 @@ int pollMidi(lua_State* state)
 }
 
 //
+// MIDI helper functions
+//
+
+// Get the code of a command
+int getCommandCode(lua_State* state)
+{
+	if (!LUA->CheckNumber(1)) {
+		return 0;
+	}
+
+	unsigned int code = LUA->GetNumber(1);
+
+	LUA->PushNumber(code & 0xF0); // strip last four bits
+
+	return 1;
+}
+
+int getCommandChannel(lua_State* state)
+{
+	if (!LUA->CheckNumber(1)) {
+		return 0;
+	}
+
+	unsigned int code = LUA->GetNumber(1);
+
+	LUA->PushNumber(code & 0x0F); // strip first four bits
+
+	return 1;
+}
+
+//
 // Called when module is opened
 //
 GMOD_MODULE_OPEN()
@@ -145,6 +176,10 @@ GMOD_MODULE_OPEN()
 			LUA->PushCFunction(openMidi); LUA->SetField(-2, "Open");
 			LUA->PushCFunction(MidiOpened); LUA->SetField(-2, "IsOpened");
 			LUA->PushCFunction(closeMidi); LUA->SetField(-2, "Close");
+
+			// MIDI command helper functions
+			LUA->PushCFunction(getCommandCode); LUA->SetField(-2, "GetCommandCode");
+			LUA->PushCFunction(getCommandChannel); LUA->SetField(-2, "GetCommandChannel");
 		LUA->SetField(-2, "midi");
 	LUA->Pop();
 
