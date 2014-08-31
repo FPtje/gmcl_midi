@@ -37,7 +37,7 @@ int getPorts(lua_State* state)
 }
 
 /*
-	Open the Midi device
+	Open the MIDI device
 */
 int openMidi(lua_State* state)
 {
