@@ -63,6 +63,16 @@ int openMidi(lua_State* state)
 }
 
 /*
+	Whether a port has been opened
+*/
+int MidiOpened(lua_State* state)
+{
+	LUA->PushBool(midiin->isPortOpen());
+
+	return 1;
+}
+
+/*
 	Close the connection in the MIDI device
 */
 int closeMidi(lua_State* state)
@@ -133,6 +143,7 @@ GMOD_MODULE_OPEN()
 		LUA->CreateTable();
 			LUA->PushCFunction(getPorts); LUA->SetField(-2, "GetPorts");
 			LUA->PushCFunction(openMidi); LUA->SetField(-2, "Open");
+			LUA->PushCFunction(MidiOpened); LUA->SetField(-2, "IsOpened");
 			LUA->PushCFunction(closeMidi); LUA->SetField(-2, "Close");
 		LUA->SetField(-2, "midi");
 	LUA->Pop();
