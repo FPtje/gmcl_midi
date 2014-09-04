@@ -5,7 +5,7 @@
 using namespace GarrysMod::Lua;
 
 RtMidiIn *midiin = 0;
-std::vector<std::vector<unsigned char>> messageList;
+std::vector< std::vector<unsigned char> > messageList;
 
 /*
 	Called when a MIDI event occurs
@@ -96,11 +96,11 @@ int pollMidi(lua_State* state)
 	unsigned int messagesSize = messageList.size();
 	if (messagesSize == 0) return 1;
 
-	
+
 	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
 		LUA->GetField(-1, "hook");
 			for (unsigned int i = 0; i < messagesSize; i++ ) {
-				unsigned int msgSize = messageList.at(i).size();
+				unsigned int msgSize = messageList[i].size();
 
 
 				LUA->GetField(-1, "Call");
@@ -108,7 +108,7 @@ int pollMidi(lua_State* state)
 				LUA->PushNil();
 
 				for (unsigned int j = 0; j < msgSize; j++ ) {
-					LUA->PushNumber(messageList.at(i).at(j));
+					LUA->PushNumber(messageList[i][j]);
 				}
 				LUA->Call(2 + msgSize, 0);
 			}
