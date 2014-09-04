@@ -74,6 +74,19 @@ Example: (please see the `MIDI commands` table in the MIDI protocol desciption)
 NOTE_OFF
 ```
 
+Possible code names:
+
+```lua
+0x80 - "NOTE_OFF"
+0x90 - "NOTE_ON"
+0xA0 - "AFTERTOUCH"
+0xB0 - "CONTINUOUS_CONTROLLER"
+0xC0 - "PATCH_CHANGE"
+0xD0 - "CHANNEL_PRESSURE"
+0xE0 - "PITCH_BEND"
+0xF0 - "SYSEX"
+```
+
 # Example
 ```Lua
 require("midi")
