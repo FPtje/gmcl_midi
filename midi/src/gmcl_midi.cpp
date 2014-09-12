@@ -121,11 +121,11 @@ int pollMidi(lua_State* state)
 	unsigned int messagesSize = messageList.size();
 	if (messagesSize == 0) return 1;
 
-	
+
 	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
 		LUA->GetField(-1, "hook");
 			for (unsigned int i = 0; i < messagesSize; i++ ) {
-				std::vector<unsigned char> message = messageList.at(i).message;
+				std::vector<unsigned char> message = messageList[i].message;
 				unsigned int msgSize = message.size();
 
 				LUA->GetField(-1, "Call");
@@ -135,7 +135,7 @@ int pollMidi(lua_State* state)
 				LUA->PushNumber(messageList.at(i).time);
 
 				for (unsigned int j = 0; j < msgSize; j++ ) {
-					LUA->PushNumber(message.at(j));
+					LUA->PushNumber(message[j]);
 				}
 
 				LUA->Call(3 + msgSize, 0);
