@@ -1,11 +1,23 @@
 #include "GarrysMod/Lua/Interface.h"
 #include <stdio.h>
 #include "RtMidi.h"
+#include <time.h>
 
 using namespace GarrysMod::Lua;
 
+double gameStartTime = 0;
 RtMidiIn *midiin = 0;
 std::vector<std::vector<unsigned char>> messageList;
+
+/*
+	Helper function: get the system time (equal to SysTime() in Lua)
+	Used to time the MIDI events exactly.
+*/
+double getSysTime()
+{
+	double systime = ((double) clock()) / CLOCKS_PER_SEC;
+	return gameStartTime + systime;
+}
 
 /*
 	Called when a MIDI event occurs
@@ -190,6 +202,16 @@ GMOD_MODULE_OPEN()
 {
 	midiin = new RtMidiIn();
 	midiin->setCallback(&onMidiCallback);
+
+	// Get the SysTime at the start of the program
+	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
+		LUA->GetField(-1, "SysTime");
+		LUA->Call(0, 1);
+		gameStartTime = LUA->GetNumber();
+	LUA->Pop();
+
+	double systime = ((double) clock()) / CLOCKS_PER_SEC; // time since loading of module
+	gameStartTime = gameStartTime - systime; // substract clock to compensate for delay since module start
 
 	// Add the polling hook
 	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
