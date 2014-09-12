@@ -7,7 +7,16 @@ using namespace GarrysMod::Lua;
 
 double gameStartTime = 0;
 RtMidiIn *midiin = 0;
-std::vector<std::vector<unsigned char>> messageList;
+
+/*
+	Struct that defines a single MIDI events that occurred at a given time
+*/
+struct TimedMIDIEvent {
+	double time;
+	std::vector<unsigned char> message; // command and parameters of the message
+};
+
+std::vector<TimedMIDIEvent> messageList;
 
 /*
 	Helper function: get the system time (equal to SysTime() in Lua)
@@ -27,7 +36,11 @@ void onMidiCallback(double deltatime, std::vector<unsigned char> *message, void 
   unsigned int nBytes = message->size();
   if (nBytes == 0) return;
 
-  messageList.push_back(*message);
+  TimedMIDIEvent ev;
+  ev.time = getSysTime();
+  ev.message = *message;
+
+  messageList.push_back(ev);
 }
 
 /*
@@ -112,17 +125,20 @@ int pollMidi(lua_State* state)
 	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
 		LUA->GetField(-1, "hook");
 			for (unsigned int i = 0; i < messagesSize; i++ ) {
-				unsigned int msgSize = messageList.at(i).size();
-
+				std::vector<unsigned char> message = messageList.at(i).message;
+				unsigned int msgSize = message.size();
 
 				LUA->GetField(-1, "Call");
 				LUA->PushString("MIDI");
 				LUA->PushNil();
 
+				LUA->PushNumber(messageList.at(i).time);
+
 				for (unsigned int j = 0; j < msgSize; j++ ) {
-					LUA->PushNumber(messageList.at(i).at(j));
+					LUA->PushNumber(message.at(j));
 				}
-				LUA->Call(2 + msgSize, 0);
+
+				LUA->Call(3 + msgSize, 0);
 			}
 	LUA->Pop();
 
@@ -204,14 +220,12 @@ GMOD_MODULE_OPEN()
 	midiin->setCallback(&onMidiCallback);
 
 	// Get the SysTime at the start of the program
+	double systime = ((double) clock()) / CLOCKS_PER_SEC; // time since loading of module
 	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
 		LUA->GetField(-1, "SysTime");
 		LUA->Call(0, 1);
-		gameStartTime = LUA->GetNumber();
+		gameStartTime = LUA->GetNumber() - systime; // substract clock to compensate for delay since module start
 	LUA->Pop();
-
-	double systime = ((double) clock()) / CLOCKS_PER_SEC; // time since loading of module
-	gameStartTime = gameStartTime - systime; // substract clock to compensate for delay since module start
 
 	// Add the polling hook
 	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
