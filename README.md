@@ -28,6 +28,7 @@ Taking a quick glance at [the MIDI protocol](https://ccrma.stanford.edu/~craig/a
 Called when a MIDI event occurs (when a key is pressed, released, when the pitch bend changes, etc). This hook will start working immediately after a port has been opened (see `midi.Open(port)`)
 
 Parameters:
+- `time`: The exact SysTime at which the MIDI event occurred. This is useful when you want to know exactly when a note was played. Note: this is independent of FPS
 - `command`: The command code of the event. This number contains **BOTH** the command code (first four bits of the number) **AND** the channel to which the command applies (last four bits of the number). These two can be separated with the `midi.GetCommandCode(command)` (returns just the command code) and `midi.GetCommandChannel(command)`. To get a human readable name of the command code, you can run `midi.GetCommandName(command)`.
 - `par1`: Many commands have one or more parameters. The command code `144` (named `"NOTE_ON"`) has two parameters: the number of the key pressed and the velocity (how hard it was pressed).
 - `...`: other parameters
@@ -60,14 +61,14 @@ Close the connection if it exists. No MIDI events will be received after this fu
 
 
 ### midi.GetCommandCode(command)
-Helper function for the first parameter of the function called by the `"MIDI"` hook. As explained in the [the MIDI protocol](https://ccrma.stanford.edu/~craig/articles/linuxmidi/misc/essenmidi.html), the command code exists of 4 bits indicating the command code and 4 bits indicating the channel to which the command applies. The `midi.GetCommandCode(command)` extracts the command code. (Basically it returns `command & 0xF0`).
+Helper function for the command (second) parameter of the function called by the `"MIDI"` hook. As explained in the [the MIDI protocol](https://ccrma.stanford.edu/~craig/articles/linuxmidi/misc/essenmidi.html), the command code exists of 4 bits indicating the command code and 4 bits indicating the channel to which the command applies. The `midi.GetCommandCode(command)` extracts the command code. (Basically it returns `command & 0xF0`).
 
 
 ### midi.GetCommandChannel(command)
 Whereas the `midi.GetCommandCode(command)` returns the command code, the `midi.GetCommandChannel(command)` function returns the channel to which the command applies. Possible channels are `0 <= channel < 16`.
 
 ### midi.GetCommandName(command)
-This function takes a command (as given in the first parameter of a function attached to the `"MIDI"` hook) and returns a human readable name.
+This function takes a command (as given in the second parameter of a function attached to the `"MIDI"` hook) and returns a human readable name.
 Example: (please see the `MIDI commands` table in the MIDI protocol desciption)
 ```lua
 ] print(midi.GetCommandName(0x80))
@@ -100,8 +101,9 @@ end
 
 print(midi.Open())
 
-hook.Add("MIDI", "print midi events", function(code, par1, par2, ...)
+hook.Add("MIDI", "print midi events", function(time, code, par1, par2, ...)
     -- The code is a byte (number between 0 and 254).
+    print("A midi event happened at ".. time .. ", which is " .. SysTime() - time .. " seconds ago!")
     print("MIDI EVENT", code, par1, par2, ...)
     print("Event code:", midi.GetCommandCode(code))
     print("Event channel:", midi.GetCommandChannel(code))
