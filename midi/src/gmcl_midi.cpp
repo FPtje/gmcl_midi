@@ -159,7 +159,7 @@ int getCommandCode(lua_State* state)
 		return 0;
 	}
 
-	unsigned int code = LUA->GetNumber(1);
+	unsigned int code = (unsigned int) LUA->GetNumber(1);
 
 	LUA->PushNumber(code & 0xF0); // strip last four bits
 
@@ -172,7 +172,7 @@ int getCommandChannel(lua_State* state)
 		return 0;
 	}
 
-	unsigned int code = LUA->GetNumber(1);
+	unsigned int code = (unsigned int) LUA->GetNumber(1);
 
 	LUA->PushNumber(code & 0x0F); // strip first four bits
 
@@ -186,7 +186,7 @@ int getCommandName(lua_State* state)
 		return 0;
 	}
 
-	unsigned int command = LUA->GetNumber(1) ;
+	unsigned int command = (unsigned int) LUA->GetNumber(1) ;
 	command = command & 0xF0;
 
 	if (command == 0x80)
