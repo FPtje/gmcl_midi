@@ -38,7 +38,7 @@ void onMidiCallback(double deltatime, std::vector<unsigned char> *message, void 
 
   TimedMIDIEvent ev;
   ev.time = getSysTime();
-  ev.message = *message;
+  ev.message = std::vector<unsigned char>(*message);
 
   messageList.push_back(ev);
 }
