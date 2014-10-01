@@ -119,7 +119,7 @@ int closeMidi(lua_State* state)
 int pollMidi(lua_State* state)
 {
 	unsigned int messagesSize = messageList.size();
-	if (messagesSize == 0) return 1;
+	if (messagesSize == 0) return 0;
 
 
 	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
@@ -140,12 +140,12 @@ int pollMidi(lua_State* state)
 
 				LUA->Call(3 + msgSize, 0);
 			}
+		LUA->Pop();
 	LUA->Pop();
-
 
 	messageList.clear();
 
-	return 1;
+	return 0;
 }
 
 //
