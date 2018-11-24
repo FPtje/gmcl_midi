@@ -32,3 +32,5 @@ In project properties (of both Win32 AND x64 targets):
     - Add the following to `Linker -> Input -> Additional dependencies`: `winmm.lib`
 
 Not doing this will cause the module to compile just fine, but it won't find any midi devices!
+
+For Linux and OSX you need to do similar things. See https://www.music.mcgill.ca/~gary/rtmidi/
