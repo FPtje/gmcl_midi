@@ -1,9 +1,14 @@
 solution "gmcl_midi"
 
 	language "C++"
-	location ( os.get() .."-".. _ACTION )
-	flags { "Symbols", "NoEditAndContinue", "NoPCH", "StaticRuntime", "EnableSSE" }
-	targetdir ( "lib/" .. os.get() .. "/" )
+	platforms {"x32", "x64"}
+	location ( os.host() .. "-" .. _ACTION )
+	symbols "On"
+	editandcontinue "Off"
+	staticruntime "On"
+	vectorextensions "SSE"
+	flags { "NoPCH" }
+	targetdir ( "lib/" .. os.host() .. "/" )
 	includedirs { "../include/" }
 
 	configurations
@@ -13,7 +18,8 @@ solution "gmcl_midi"
 
 	configuration "Release"
 		defines { "NDEBUG" }
-		flags{ "Optimize", "FloatFast" }
+		optimize "On"
+		floatingpoint "Fast"
 
 	project "gmcl_midi"
 		defines { "GMMODULE" }

@@ -1,5 +1,10 @@
 premake4.exe
+premake5.exe
 midi/lib/*
 midi/linux-gmake/*
 midi/macosx-gmake/*
 midi/windows-vs2010/*
+midi/windows-vs2012/*
+midi/windows-vs2017/*
+midi/windows-gmake/*
+

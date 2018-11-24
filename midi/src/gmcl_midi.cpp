@@ -46,7 +46,7 @@ void onMidiCallback(double deltatime, std::vector<unsigned char> *message, void 
 /*
 	Get the available MIDI ports
 */
-int getPorts(lua_State* state)
+LUA_FUNCTION(getPorts)
 {
 	unsigned int portCount = midiin->getPortCount();
 
@@ -57,14 +57,13 @@ int getPorts(lua_State* state)
 		LUA->PushString(midiin->getPortName(i).c_str());
 		LUA->SetTable(-3);
 	}
-
-	return 1;
+    return 1;
 }
 
 /*
 	Open the MIDI device
 */
-int openMidi(lua_State* state)
+LUA_FUNCTION(openMidi)
 {
 	int port = 0;
 	if (LUA->IsType(1, Type::NUMBER))
@@ -90,7 +89,7 @@ int openMidi(lua_State* state)
 /*
 	Whether a port has been opened
 */
-int MidiOpened(lua_State* state)
+LUA_FUNCTION(MidiOpened)
 {
 	LUA->PushBool(midiin->isPortOpen());
 
@@ -100,7 +99,7 @@ int MidiOpened(lua_State* state)
 /*
 	Close the connection in the MIDI device
 */
-int closeMidi(lua_State* state)
+LUA_FUNCTION(closeMidi)
 {
 	if (!midiin->isPortOpen()) {
 		LUA->ThrowError("There aren't any ports open");
@@ -116,7 +115,7 @@ int closeMidi(lua_State* state)
 	This function is called every frame.
 	It's used for syncing the MIDI events with Lua
 */
-int pollMidi(lua_State* state)
+LUA_FUNCTION(pollMidi)
 {
 	unsigned int messagesSize = messageList.size();
 	if (messagesSize == 0) return 0;
@@ -153,7 +152,7 @@ int pollMidi(lua_State* state)
 //
 
 // Get the code of a command
-int getCommandCode(lua_State* state)
+LUA_FUNCTION(getCommandCode)
 {
 	if (!LUA->CheckNumber(1)) {
 		return 0;
@@ -166,7 +165,7 @@ int getCommandCode(lua_State* state)
 	return 1;
 }
 
-int getCommandChannel(lua_State* state)
+LUA_FUNCTION(getCommandChannel)
 {
 	if (!LUA->CheckNumber(1)) {
 		return 0;
@@ -180,7 +179,7 @@ int getCommandChannel(lua_State* state)
 }
 
 
-int getCommandName(lua_State* state)
+LUA_FUNCTION(getCommandName)
 {
 	if (!LUA->CheckNumber(1)) {
 		return 0;
