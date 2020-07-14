@@ -65,7 +65,7 @@ LIBS += ... -ljack
 ...
 ```
 
-+ Run `make --config=release_x[32,64] clean gmcl_midi` to compile the module.
++ Run `make config=release_x[32,64] clean gmcl_midi` to compile the module.
 
 # MacOS / OSX
 
