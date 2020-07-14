@@ -66,3 +66,20 @@ LIBS += ... -ljack
 ```
 
 + Run `make --config=release_x[32,64] clean gmcl_midi` to compile the module.
+
+# MacOS / OSX
+
+The instructions for OSX are very similar to the ones for [Linux](#Linux), with the following changes:
+
++ `macosx-gmake` instead of `linux-gmake`
++ When editing `gmcl_midi.make`, you can also use the [JACK](#JACK) or CoreMIDI backend:
+
+### CoreMIDI
+
+```make
+...
+DEFINES += ... -D__MACOSX_CORE__
+...
+LIBS += ... -framework CoreMIDI -framework CoreAudio -framework CoreFoundation
+...
+```
