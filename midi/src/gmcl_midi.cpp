@@ -66,7 +66,7 @@ LUA_FUNCTION(getPorts)
 LUA_FUNCTION(openMidi)
 {
 	int port = 0;
-	if (LUA->IsType(1, Type::NUMBER))
+	if (LUA->IsType(1, Type::Number))
 		port = (int) LUA->GetNumber(1);
 
 	if (midiin->getPortCount() == 0) {
